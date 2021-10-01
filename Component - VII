@@ -1,0 +1,67 @@
+import React, { FC, useState } from "react";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
+import { Colors } from "../theme/colors";
+import { AntDesign } from "@expo/vector-icons";
+import commonStyle from "../theme/commonStyle";
+import { Images_Genres } from "../theme/images";
+import { Strings } from "../theme/string";
+import { commonDimensions } from "../theme/commonDimensions";
+import { AuthenticationPrompt } from "react-native-keychain";
+
+interface Props {
+  widthSelected: any;
+  title: string;
+  text: string | null;
+  onPress: void;
+}
+
+const InputPicker: FC<Props> = (props) => {
+  return (
+    <View>
+      <Text style={commonStyle.TEXT_INPUT_LABEL_SMALL}>{props.title}</Text>
+
+      <TouchableOpacity
+        style={
+          props.text
+            ? [
+                commonStyle.INPUT_ROW_CHECKED,
+                commonStyle.INPUT_ROW_GENERAL,
+                { width: props.widthSelected },
+              ]
+            : [
+                commonStyle.INPUT_ROW_UNCHECKED,
+                commonStyle.INPUT_ROW_GENERAL,
+                { width: props.widthSelected },
+              ]
+        }
+        onPress={props.onPress}
+      >
+        <Text style={commonStyle.MY_TEXT_INPUT_MAIN}>{props.text}</Text>
+        {props.text ? (
+          <View style={commonStyle.INPUT_ICON_ALIGN_LEFT}>
+            <AntDesign
+              name="check"
+              size={18}
+              color={Colors.black}
+              alignSelf="flex-end"
+              position="absolute"
+            />
+          </View>
+        ) : (
+          <View style={commonStyle.INPUT_ICON_ALIGN_LEFT}>
+            <AntDesign
+              name="down"
+              size={18}
+              color={Colors.white}
+              alignSelf="flex-end"
+              position="absolute"
+            />
+          </View>
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default InputPicker;
