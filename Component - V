@@ -1,0 +1,174 @@
+import React, { FC, useState } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import ButtonNext from "../../components/ButtonNext";
+import styles from "./style";
+import Input from "../../components/input";
+import { Strings } from "../../theme/string";
+import { Colors } from "../../theme/colors";
+import { Picker } from "@react-native-picker/picker";
+import { commonDimensions } from "../../theme/commonDimensions";
+import InputPicker from "../../components/InputPicker";
+import commonStyle from "../../theme/commonStyle";
+import { AntDesign } from "@expo/vector-icons";
+
+type stringUndefined = string | undefined;
+
+const App: FC = (props) => {
+  const [zipCode, setZipCode] = useState<stringUndefined>(undefined);
+  const [suburb, setSuburb] = useState<stringUndefined>(undefined);
+  const [state, setState] = useState<stringUndefined>(undefined);
+  const [city, setCity] = useState<stringUndefined>(undefined);
+
+  const [locationShow, setLocationShow] = useState(false);
+  const [stateOpen, setStateOpen] = useState(false);
+  const [stateShow, setStateShow] = useState(false);
+
+  const showModeState = () => {
+    if (stateOpen) {
+      setStateOpen(false);
+    } else {
+      setStateOpen(true);
+      setStateShow(true);
+    }
+  };
+
+  const isLocationShow = () => {
+    if (locationShow) {
+      setLocationShow(false);
+      console.log(locationShow);
+    } else {
+      setLocationShow(true);
+      console.log(locationShow);
+    }
+  };
+
+  return (
+    <View>
+      <Text style={commonStyle.TEXT_INPUT_LABEL_SMALL}>
+        {Strings.MY_APP_EVENT_CREATE_EVENT_LOCATION}
+      </Text>
+
+      <TouchableOpacity
+        onPress={isLocationShow}
+        style={[
+          commonStyle.INPUT_ROW_UNCHECKED,
+          commonStyle.INPUT_ROW_GENERAL,
+          { width: commonDimensions.MY_DIMENSION_MAIN_INPUT },
+        ]}
+      >
+        {!locationShow && (
+          <View style={[commonStyle.INPUT_ICON_ALIGN_LEFT]}>
+            <AntDesign
+              name="down"
+              size={18}
+              color={Colors.white}
+              alignSelf="flex-end"
+              position="absolute"
+            />
+          </View>
+        )}
+
+        {zipCode !== undefined && (
+          <View>
+            <Text style={commonStyle.MY_TEXT_INPUT_MAIN}>
+              {suburb + ", " + city + ", " + state + ", " + zipCode}
+            </Text>
+          </View>
+        )}
+      </TouchableOpacity>
+      {locationShow && (
+        <View>
+          <View style={styles.date_gender}>
+            <Input
+              widthSelected={commonDimensions.MY_DIMENSION_SMALL_INPUT}
+              label={Strings.MY_APP_ZIPCODE}
+              onChangeText={(zipCode) => setZipCode(zipCode)}
+              keyboardType="number-pad"
+              maxLength={4}
+              returnKeyType={"done"}
+              defaultValue={zipCode}
+            />
+            <View>
+              <Text> </Text>
+            </View>
+            <Input
+              widthSelected={commonDimensions.MY_DIMENSION_NORMAL_INPUT}
+              label={Strings.MY_APP_SUBURB}
+              onChangeText={(suburb) => setSuburb(suburb)}
+              defaultValue={suburb}
+            />
+          </View>
+          <View style={styles.date_gender}>
+            <InputPicker
+              title={Strings.MY_APP_STATES}
+              onPress={showModeState}
+              showMode={stateShow}
+              widthSelected={commonDimensions.MY_DIMENSION_SMALL_INPUT}
+              text={state}
+            ></InputPicker>
+            <View>
+              <Text> </Text>
+            </View>
+
+            <Input
+              widthSelected={commonDimensions.MY_DIMENSION_NORMAL_INPUT}
+              label={Strings.MY_APP_CITY}
+              onChangeText={(city) => setCity(city)}
+              defaultValue={city}
+            />
+          </View>
+
+          {stateOpen && (
+            <Picker
+              selectedValue={state}
+              onValueChange={(itemValue, itemIndex) => setState(itemValue)}
+            >
+              <Picker.Item
+                color={Colors.white}
+                label={Strings.MY_APP_STATES_ACT}
+                value={Strings.MY_APP_STATES_ACT}
+              />
+              <Picker.Item
+                color={Colors.white}
+                label={Strings.MY_APP_STATES_NSW}
+                value={Strings.MY_APP_STATES_NSW}
+              />
+              <Picker.Item
+                color={Colors.white}
+                label={Strings.MY_APP_STATES_NT}
+                value={Strings.MY_APP_STATES_NT}
+              />
+              <Picker.Item
+                color={Colors.white}
+                label={Strings.MY_APP_STATES_QLD}
+                value={Strings.MY_APP_STATES_QLD}
+              />
+              <Picker.Item
+                color={Colors.white}
+                label={Strings.MY_APP_STATES_SA}
+                value={Strings.MY_APP_STATES_SA}
+              />
+              <Picker.Item
+                color={Colors.white}
+                label={Strings.MY_APP_STATES_VIC}
+                value={Strings.MY_APP_STATES_VIC}
+              />
+              <Picker.Item
+                color={Colors.white}
+                label={Strings.MY_APP_STATES_TAS}
+                value={Strings.MY_APP_STATES_TAS}
+              />
+              <Picker.Item
+                color={Colors.white}
+                label={Strings.MY_APP_STATES_WA}
+                value={Strings.MY_APP_STATES_WA}
+              />
+            </Picker>
+          )}
+        </View>
+      )}
+    </View>
+  );
+};
+
+export default App;
