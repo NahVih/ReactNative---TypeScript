@@ -1,0 +1,221 @@
+import React, { FC, useState, useEffect } from "react";
+import {
+  View,
+  Alert,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  Modal,
+  ActivityIndicator,
+} from "react-native";
+import ButtonNext from "../../../components/ButtonNext";
+import BackButton from "../../../components/BackButton";
+import styles from "./style";
+import Input from "../../../components/input";
+import { Strings } from "../../../theme/string";
+import { Colors } from "../../../theme/colors";
+import { Picker } from "@react-native-picker/picker";
+import { commonDimensions } from "../../../theme/commonDimensions";
+import commonStyle from "../../../theme/commonStyle";
+import ImagePickerExample from "../../../components/ImagePicker";
+import InputPicker from "../../../components/InputPicker";
+import * as SecureStore from "expo-secure-store";
+import { getSignupSecondStep } from "./getSignupSecondStep";
+import { endPoint } from "../../../theme/endPoint";
+
+const App: FC = (props) => {
+  const [bandName, setBandName] = useState<string | null>(null);
+  const [mobile, setMobile] = useState<string | null>(null);
+  const [zipCode, setZipCode] = useState<string | null>(null);
+  const [suburb, setSuburb] = useState<string | null>(null);
+  const [state, setState] = useState<string>("");
+  const [city, setCity] = useState<string | null>(null);
+
+  const [stateOpen, setStateOpen] = useState(false);
+  const [stateShow, setStateShow] = useState(false);
+  const [showSignUp, setshowSignUp] = useState(true);
+
+  const [modalLoadingVisible, setModalLoadingVisible] =
+    useState<boolean>(false);
+
+  const showModeState = () => {
+    if (stateOpen) {
+      setStateOpen(false);
+      setshowSignUp(true);
+    } else {
+      setStateOpen(true);
+      setStateShow(true);
+      setshowSignUp(false);
+    }
+  };
+
+  const signup = async () => {
+    if (state) {
+      const token = await SecureStore.getItemAsync("secure_token");
+
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", "Bearer " + token);
+
+      var raw = JSON.stringify({
+        name: bandName,
+        phoneNumber: mobile,
+        location: {
+          address: "Bennelong Point",
+          state: state,
+          city: city,
+          zipCode: zipCode,
+          suburb: suburb,
+        },
+        status: "active",
+      });
+
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      fetch(
+        endPoint.MY_HOST + endPoint.MY_PORT + endPoint.MY_USER_CREATE_BAND,
+        requestOptions
+      )
+        .then((response) => response.json())
+        .then((result) => {
+          result.success
+            ? props.navigation.navigate("profile")
+            : Alert.alert(result.message);
+        })
+        .catch((error) => console.log("error", error));
+    } else {
+      Alert.alert(`Error`, `Missing Fields` + bandName);
+    }
+  };
+
+  useEffect(() => {}, []);
+
+  return (
+    <SafeAreaView style={commonStyle.container}>
+      <BackButton
+        onPress={() => props.navigation.goBack()}
+        mainTitle={Strings.MY_BAND_CREATE_YOUR_BAND}
+      ></BackButton>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <ImagePickerExample></ImagePickerExample>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalLoadingVisible}
+        >
+          <View style={styles.centeredView}>
+            <ActivityIndicator size="large" color="orange" />
+          </View>
+        </Modal>
+        <Input
+          widthSelected={commonDimensions.MY_DIMENSION_MAIN_INPUT}
+          label={Strings.MY_BAND_NAME}
+          onChangeText={(bandName) => setBandName(bandName)}
+        />
+
+        <Input
+          widthSelected={commonDimensions.MY_DIMENSION_MAIN_INPUT}
+          label={Strings.MY_BAND_MOBILE}
+          onChangeText={(mobile) => setMobile(mobile)}
+          keyboardType="phone-pad"
+          returnKeyType={"done"}
+        />
+
+        <View style={styles.date_gender}>
+          <Input
+            widthSelected={commonDimensions.MY_DIMENSION_SMALL_INPUT}
+            label={Strings.MY_APP_ZIPCODE}
+            onChangeText={(zipCode) => setZipCode(zipCode)}
+            keyboardType="number-pad"
+            maxLength={4}
+            returnKeyType={"done"}
+          />
+          <View>
+            <Text> </Text>
+          </View>
+          <Input
+            widthSelected={commonDimensions.MY_DIMENSION_NORMAL_INPUT}
+            label={Strings.MY_APP_SUBURB}
+            onChangeText={(suburb) => setSuburb(suburb)}
+          />
+        </View>
+        <View style={styles.date_gender}>
+          <InputPicker
+            title={Strings.MY_APP_STATES}
+            onPress={showModeState}
+            showMode={stateShow}
+            widthSelected={commonDimensions.MY_DIMENSION_SMALL_INPUT}
+            text={state}
+          ></InputPicker>
+          <View>
+            <Text> </Text>
+          </View>
+
+          <Input
+            widthSelected={commonDimensions.MY_DIMENSION_NORMAL_INPUT}
+            label={Strings.MY_APP_CITY}
+            onChangeText={(city) => setCity(city)}
+          />
+        </View>
+
+        {stateOpen && (
+          <Picker
+            selectedValue={state}
+            onValueChange={(itemValue, itemIndex) => setState(itemValue)}
+          >
+            <Picker.Item
+              color={Colors.white}
+              label={Strings.MY_APP_STATES_ACT}
+              value={Strings.MY_APP_STATES_ACT}
+            />
+            <Picker.Item
+              color={Colors.white}
+              label={Strings.MY_APP_STATES_NSW}
+              value={Strings.MY_APP_STATES_NSW}
+            />
+            <Picker.Item
+              color={Colors.white}
+              label={Strings.MY_APP_STATES_NT}
+              value={Strings.MY_APP_STATES_NT}
+            />
+            <Picker.Item
+              color={Colors.white}
+              label={Strings.MY_APP_STATES_QLD}
+              value={Strings.MY_APP_STATES_QLD}
+            />
+            <Picker.Item
+              color={Colors.white}
+              label={Strings.MY_APP_STATES_SA}
+              value={Strings.MY_APP_STATES_SA}
+            />
+            <Picker.Item
+              color={Colors.white}
+              label={Strings.MY_APP_STATES_VIC}
+              value={Strings.MY_APP_STATES_VIC}
+            />
+            <Picker.Item
+              color={Colors.white}
+              label={Strings.MY_APP_STATES_TAS}
+              value={Strings.MY_APP_STATES_TAS}
+            />
+            <Picker.Item
+              color={Colors.white}
+              label={Strings.MY_APP_STATES_WA}
+              value={Strings.MY_APP_STATES_WA}
+            />
+          </Picker>
+        )}
+        {!stateOpen && (
+          <ButtonNext title={Strings.MY_APP_NEXT} onPress={signup}></ButtonNext>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+export default App;
