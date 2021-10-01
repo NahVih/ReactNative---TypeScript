@@ -1,0 +1,86 @@
+import React, { FC, useState, useEffect } from "react";
+import { Text, View, TouchableOpacity, Alert } from "react-native";
+import Header from "../../../components/Authentication/Header";
+import ButtonNext from "../../../components/ButtonNext";
+import BackButton from "../../../components/BackButton";
+import { Strings } from "../../../theme/string";
+import styles from "./style";
+import Input from "../../../components/input";
+import { commonDimensions } from "../../../theme/commonDimensions";
+import commonStyle from "../../../theme/commonStyle";
+import AuthContext from "../../../Context/authContext";
+import DontHaveAccount from "../../../components/Authentication/DontHaveAccount";
+import { validateIsEmail } from "../../../functions/validateIsEmail";
+import { validateIsPassword } from "../../../functions/validateIsPassword";
+import { useNavigation } from "@react-navigation/native";
+
+const App: FC = (props: any) => {
+  const { signIn } = React.useContext(AuthContext);
+
+  const navigation = useNavigation();
+
+  const [email, setEmail] = useState<string | null>(null);
+  const [password, setPassword] = useState<string | null>("");
+  const [isCheckedEmail, setIsCheckedEmail] = useState<boolean>(false);
+  const [isCheckedPassword, setIsCheckedPassword] = useState<boolean>(false);
+
+  const nextPage = () => {
+    if (!isCheckedEmail) {
+      Alert.alert(Strings.MY_APP_EMAIL_NOT_VALID_ERROR);
+    } else {
+      signIn({ email, password });
+      navigation.reset({
+        routes: [{ name: "MainTab" }],
+      });
+      /*     props.navigation.navigate("MainTab");
+       */
+    }
+  };
+
+  useEffect(() => {
+    setIsCheckedEmail(validateIsEmail(email));
+    setIsCheckedPassword(validateIsPassword(password));
+  }, [email, password]);
+
+  return (
+    <View style={commonStyle.container}>
+      <View>
+        <Header></Header>
+      </View>
+
+      <BackButton
+        onPress={() => props.navigation.goBack()}
+        mainTitle={Strings.MY_APP_LOGIN_LC}
+      ></BackButton>
+
+      <Input
+        widthSelected={commonDimensions.MY_DIMENSION_MAIN_INPUT}
+        label={Strings.MY_APP_EMAIL_ADDRESS}
+        onChangeText={(email) => setEmail(email)}
+        keyboardType="email-address"
+        styleChecked={isCheckedEmail}
+      />
+      <Input
+        widthSelected={commonDimensions.MY_DIMENSION_MAIN_INPUT}
+        label={Strings.MY_APP_PASSWORD}
+        secureTextEntry={true}
+        onChangeText={(password) => setPassword(password)}
+        styleChecked={isCheckedPassword}
+      />
+      <TouchableOpacity
+        onPress={() => props.navigation.navigate("forgotPassword")}
+      >
+        <Text style={styles.forgot_button}>{Strings.MY_APP_FORGOT_PASS} </Text>
+      </TouchableOpacity>
+      <ButtonNext
+        title={Strings.MY_APP_LOGIN_LC}
+        onPress={nextPage}
+      ></ButtonNext>
+      <DontHaveAccount
+        onPress={() => props.navigation.navigate("signupSecondStep")}
+      ></DontHaveAccount>
+    </View>
+  );
+};
+
+export default App;
