@@ -1,0 +1,104 @@
+import React, { FC, useState } from "react";
+import { View, StyleSheet, Text } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
+import { Colors } from "../theme/colors";
+import { AntDesign } from "@expo/vector-icons";
+import commonStyle from "../theme/commonStyle";
+
+interface Props {
+  label: string;
+  onChangeText: (text: string | undefined) => void;
+  secureTextEntry: boolean;
+  keyboardType: any;
+  maxLength: number;
+  returnKeyType: any;
+  styleChecked: boolean;
+  widthSelected: any;
+  defaultValue: string | Date;
+}
+
+const Input: FC<Props> = (props) => {
+  return (
+    <View>
+      <Text style={commonStyle.TEXT_INPUT_LABEL_SMALL}>{props.label}</Text>
+      <View
+        style={
+          props.styleChecked
+            ? [
+                commonStyle.INPUT_ROW_CHECKED,
+                commonStyle.INPUT_ROW_GENERAL,
+                { width: props.widthSelected },
+              ]
+            : [
+                commonStyle.INPUT_ROW_UNCHECKED,
+                commonStyle.INPUT_ROW_GENERAL,
+                { width: props.widthSelected },
+              ]
+        }
+      >
+        <TextInput
+          style={commonStyle.MY_TEXT_INPUT_MAIN}
+          onChangeText={props.onChangeText}
+          secureTextEntry={props.secureTextEntry || false}
+          keyboardType={props.keyboardType}
+          maxLength={props.maxLength}
+          returnKeyType={props.returnKeyType}
+          defaultValue={props.defaultValue}
+        ></TextInput>
+
+        {props.styleChecked ? (
+          <View style={commonStyle.INPUT_ICON_ALIGN_LEFT}>
+            <AntDesign
+              name="check"
+              size={18}
+              color={Colors.black}
+              alignSelf="flex-end"
+              position="absolute"
+            />
+          </View>
+        ) : null}
+      </View>
+    </View>
+  );
+};
+
+export default Input;
+
+const styles = StyleSheet.create({
+  inputText: {
+    color: Colors.black,
+    textAlign: "left",
+    padding: 10,
+    fontSize: 14,
+    width: "100%",
+  },
+  TextLabel: {
+    fontSize: 16,
+    color: "white",
+    padding: 5,
+  },
+  inputRow: {
+    flexDirection: "row",
+    backgroundColor: "rgba(255,255,255,0.4)",
+    borderRadius: 10,
+    height: 45,
+
+    alignSelf: "center",
+    marginBottom: 20,
+  },
+  inputRowChecked: {
+    flexDirection: "row",
+    backgroundColor: "rgba(255,255,255,0.76)",
+    height: 45,
+    marginBottom: 20,
+    alignSelf: "center",
+    alignItems: "center", // align checked icon
+    borderRadius: 10,
+  },
+  labelView: {
+    marginStart: "5%",
+  },
+  textView: {
+    width: "80%",
+  },
+});
