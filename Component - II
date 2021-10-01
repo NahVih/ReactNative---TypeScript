@@ -1,0 +1,25 @@
+import React, { FC } from "react";
+import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { Strings } from "../../../theme/string";
+import commonStyle from "../../../theme/commonStyle";
+
+interface Props {
+  onPress: () => void;
+}
+
+const App: FC<Props> = (props) => {
+  return (
+    <View style={[commonStyle.QUESTION_WITH_LINK_GENERAL, { marginTop: 200 }]}>
+      <Text style={commonStyle.QUESTION_WITH_LINK_GENERAL_TEXT}>
+        {Strings.MY_APP_DO_NOT_HAVE_AN_ACCOUNT}
+      </Text>
+      <TouchableOpacity onPress={props.onPress}>
+        <Text style={commonStyle.QUESTION_WITH_LINK_GENERAL_TEXT_SIGNUP_BUTTON}>
+          {Strings.MY_APP_SIGN_UP_LC}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default App;
