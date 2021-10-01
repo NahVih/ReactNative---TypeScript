@@ -110,7 +110,7 @@ const App: FC<Props> = (props) => {
             <Image
               source={{
                 uri:
-                  "https://stage-of-music.s3.us-east-2.amazonaws.com/" +
+                  "https://website.s3.us-east-2.amazonaws.com/" +
                   item.imagesPath.substring(9, 34),
               }}
               style={styles.img}
