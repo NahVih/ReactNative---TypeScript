@@ -1,0 +1,104 @@
+import React, { FC, useState, useEffect } from "react";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+  Dimensions,
+  ImagePropTypes,
+} from "react-native";
+import Header from "../../../components/Authentication/Header";
+import MainTitle from "../../../components/Authentication/MainTitle";
+import ButtonNext from "../../../components/ButtonNext";
+import BackButton from "../../../components/BackButton";
+import { Strings } from "../../../theme/string";
+import styles from "./style";
+import Input from "../../../components/input";
+import { commonDimensions } from "../../../theme/commonDimensions";
+import {
+  validateIsPassword,
+  validateIsConfirmPassword,
+} from "../../../functions/validateIsPassword";
+import commonStyle from "../../../theme/commonStyle";
+import * as SecureStore from "expo-secure-store";
+import { endPoint } from "../../../theme/endPoint";
+import { postNewPassword } from "./postNewPassword";
+
+const App: FC = ({ navigation, route }) => {
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+
+  const [isCheckedNewPassword, setIsCheckedNewPassword] =
+    useState<boolean>(false);
+  const [isCheckedConfirmPassword, setIsCheckedConfirmPassword] =
+    useState<boolean>(false);
+
+  const newPasswordCheck = () => {
+    if (!isCheckedNewPassword) {
+      Alert.alert(Strings.MY_APP_PASS_NOT_VALID_ERROR);
+    } else if (!isCheckedConfirmPassword) {
+      Alert.alert(Strings.MY_APP_PASS_NOT_MATCHED_ERROR);
+    } else {
+      let email: string = route.params.email;
+      console.log(email);
+      postNewPassword({ email, newPassword });
+    }
+  };
+
+  useEffect(() => {
+    setIsCheckedNewPassword(validateIsPassword(newPassword));
+    setIsCheckedConfirmPassword(
+      validateIsConfirmPassword(
+        newPassword,
+        confirmPassword,
+        isCheckedNewPassword
+      )
+    );
+  }, [newPassword, confirmPassword, isCheckedNewPassword]);
+
+  return (
+    <View style={commonStyle.container}>
+      <View>
+        <Header></Header>
+      </View>
+      <BackButton
+        onPress={() => navigation.goBack()}
+        mainTitle={Strings.MY_APP_NEW_PASSWORD}
+      ></BackButton>
+      <View style={{ paddingTop: 50 }}>
+        <Input
+          widthSelected={commonDimensions.MY_DIMENSION_MAIN_INPUT}
+          label={Strings.MY_APP_NEW_PASSWORD}
+          onChangeText={(e) => {
+            setNewPassword(e);
+            console.log(e);
+          }}
+          styleChecked={isCheckedNewPassword}
+          secureTextEntry={true}
+        />
+        <Input
+          widthSelected={commonDimensions.MY_DIMENSION_MAIN_INPUT}
+          label={Strings.MY_APP_CONFIRM_PASSWORD}
+          onChangeText={(e) => {
+            setConfirmPassword(e);
+            console.log(e);
+          }}
+          secureTextEntry={true}
+          styleChecked={isCheckedConfirmPassword}
+        />
+      </View>
+      <ButtonNext
+        title={Strings.MY_APP_DONE}
+        onPress={newPasswordCheck}
+      ></ButtonNext>
+
+      <TouchableOpacity onPress={() => navigation.navigate("home")}>
+        <Text style={commonStyle.QUESTION_WITH_LINK_GENERAL_TEXT_SIGNUP_BUTTON}>
+          {Strings.MY_APP_BACK_TO_LOGIN}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default App;
